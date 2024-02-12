@@ -1,7 +1,7 @@
 {
-  "name": "fcc-api-projects-boilerplate",
+  "name": "fcc-backend-apis",
   "version": "0.0.1",
-  "description": "An FCC Backend Challenge",
+  "description": "Kate's fcc-backend-apis app",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
