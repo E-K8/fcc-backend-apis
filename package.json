@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/freeCodeCamp/boilerplate-project-timestamp.git"
+    "url": "https://github.com/E-K8/fcc-backend-apis.git"
   },
   "bugs": {
-    "url": "https://github.com/freeCodeCamp/freeCodeCamp/issues"
+    "url": "https://github.com/E-K8/fcc-backend-apis/issues"
   },
-  "homepage": "https://github.com/freeCodeCamp/boilerplate-project-timestamp#readme",
-  "author": "freeCodeCamp <team@freecodecamp.org>",
+  "homepage": "https://github.com/E-K8/fcc-backend-apis#readme",
+  "author": "Kate Platonova",
   "keywords": [
     "node",
     "express",
