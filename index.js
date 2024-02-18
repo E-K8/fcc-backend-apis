@@ -21,7 +21,16 @@ app.get('/', function (req, res) {
 
 // your first API endpoint...
 app.get('/api/hello', function (req, res) {
+  console.log({ greeting: 'hello API' });
   res.json({ greeting: 'hello API' });
+});
+
+app.get('/api/:date', function (req, res) {
+  console.log('request =>', req.params, '<= request');
+  let dateString = req.params.date;
+  console.log(dateString);
+
+  res.json({ error: 'Invalid Date' });
 });
 
 // listen for requests :)

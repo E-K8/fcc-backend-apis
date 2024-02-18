@@ -1,4 +1,4 @@
-# fcc-backend-apis
+# Backend APIs projects
 
 Projects built for the Front End Development Libraries certification from freeCodeCamp
 

@@ -4,7 +4,8 @@
   "description": "Kate's fcc-backend-apis app",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "cors": "^2.8.0",
@@ -26,6 +27,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.5.2"
+    "@flydotio/dockerfile": "^0.5.2",
+    "nodemon": "^3.0.3"
   }
 }
