@@ -1,39 +1,43 @@
-// index.js
-// where my node app starts
-
 // init project
-var express = require('express');
-var app = express();
-var port = process.env.PORT || 3000;
+import express from 'express';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+// Define __dirname in ES6 module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const port = process.env.PORT || 3000;
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC
-var cors = require('cors');
+// so that my API is remotely testable by FCC
+import cors from 'cors';
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+app.get('/', (req, res) => {
+  res.sendFile(`${__dirname}/views/index.html`);
 });
 
 // my first API endpoint...
-app.get('/api/hello', function (req, res) {
+app.get('/api/hello', (req, res) => {
   console.log({ greeting: 'hello API' });
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api', function (req, res) {
-  let now = new Date();
+app.get('/api', (req, res) => {
+  const now = new Date();
   res.json({
     unix: now.getTime(),
     utc: now.toUTCString(),
   });
 });
 
-app.get('/api/:date', function (req, res) {
+app.get('/api/:date', (req, res) => {
   let dateString = req.params.date;
   let passedInValue = new Date(dateString);
   // attempt to convert dateString to a number ↓
@@ -48,7 +52,7 @@ app.get('/api/:date', function (req, res) {
     passedInValue = new Date(dateString);
   }
 
-  if (passedInValue == 'Invalid Date') {
+  if (passedInValue.toString() === 'Invalid Date') {
     res.json({ error: 'Invalid Date' });
   } else {
     res.json({
@@ -59,6 +63,6 @@ app.get('/api/:date', function (req, res) {
 });
 
 // listen for requests :)
-var listener = app.listen(port, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+const listener = app.listen(port, () => {
+  console.log(`Your app is listening on port ${listener.address().port}`);
 });
