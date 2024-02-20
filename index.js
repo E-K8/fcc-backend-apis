@@ -1,5 +1,5 @@
 // index.js
-// where your node app starts
+// where my node app starts
 
 // init project
 var express = require('express');
@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-// your first API endpoint...
+// my first API endpoint...
 app.get('/api/hello', function (req, res) {
   console.log({ greeting: 'hello API' });
   res.json({ greeting: 'hello API' });
@@ -34,9 +34,20 @@ app.get('/api', function (req, res) {
 });
 
 app.get('/api/:date', function (req, res) {
-  console.log('request =>', req.params, '<= request');
   let dateString = req.params.date;
   let passedInValue = new Date(dateString);
+  // attempt to convert dateString to a number ↓
+  let unixNumber = Number(dateString);
+
+  // check that the conversion was successful and the number is an integer ↓
+  if (!isNaN(unixNumber) && unixNumber.toString() === dateString) {
+    // the input is a valid Unix timestamp: create a Date object from the number
+    passedInValue = new Date(unixNumber);
+  } else {
+    // the input is not a Unix timestamp: attempt to create a Date object from the string
+    passedInValue = new Date(dateString);
+  }
+
   if (passedInValue == 'Invalid Date') {
     res.json({ error: 'Invalid Date' });
   } else {
