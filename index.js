@@ -31,6 +31,10 @@ app.get('/requestHeaderParser', (req, res) => {
   res.sendFile(`${__dirname}/views/requestHeaderParser.html`);
 });
 
+app.get('/urlShortener', (req, res) => {
+  res.sendFile(`${__dirname}/views/urlShortener.html`);
+});
+
 // my first API endpoint...
 app.get('/api/hello', (req, res) => {
   console.log({ greeting: 'hello API' });
