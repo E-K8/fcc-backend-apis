@@ -2,6 +2,8 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import mongoose from 'mongoose';
+import { mongo } from 'mongodb';
 
 // Define __dirname in ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -35,7 +37,7 @@ app.get('/urlShortener', (req, res) => {
   res.sendFile(`${__dirname}/views/urlShortener.html`);
 });
 
-// my first API endpoint...
+// my first API endpoint
 app.get('/api/hello', (req, res) => {
   console.log({ greeting: 'hello API' });
   res.json({ greeting: 'hello API' });
@@ -81,6 +83,8 @@ app.get('/api/:date', (req, res) => {
     });
   }
 });
+
+// URL shortener
 
 // listen for requests :)
 const listener = app.listen(port, () => {
