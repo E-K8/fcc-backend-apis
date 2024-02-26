@@ -3,7 +3,10 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
-import { mongo } from 'mongodb';
+import mongo from 'mongodb';
+
+// mongoose.connect(process.env.DB_URI);
+// mongoose.connect(database_uri); <= temporary variable in brackets as a solution to make it work locally
 
 // Define __dirname in ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -85,6 +88,13 @@ app.get('/api/:date', (req, res) => {
 });
 
 // URL shortener
+app.post('/api/shorturl', (req, res) => {
+  console.log('POST request called');
+  console.log(req, ' <= req');
+  res.json({
+    success: 'POST request processed',
+  });
+});
 
 // listen for requests :)
 const listener = app.listen(port, () => {
