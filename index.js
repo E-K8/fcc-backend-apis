@@ -4,9 +4,11 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
 import mongo from 'mongodb';
+import bodyParser from 'body-parser';
 
 // mongoose.connect(process.env.DB_URI);
-// mongoose.connect(database_uri); <= temporary variable in brackets as a solution to make it work locally
+// mongoose.connect(database_uri);
+// ↑↑↑ temporary variable in brackets as a solution to make it work locally, I create it on top of the file and don't commit it
 
 // Define __dirname in ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -88,11 +90,21 @@ app.get('/api/:date', (req, res) => {
 });
 
 // URL shortener
-app.post('/api/shorturl', (req, res) => {
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
+// POST /api/users gets JSON bodies
+app.post('/api/shorturl', function (req, res) {
+  let client_submitted_url = req.body.url;
+  // let suffix = '';
   console.log('POST request called');
-  console.log(req, ' <= req');
+
   res.json({
-    success: 'POST request processed',
+    success: 'placeholder for shortened URL',
+    original_url: client_submitted_url,
   });
 });
 
