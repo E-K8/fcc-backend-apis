@@ -92,6 +92,16 @@ app.get('/api/:date', (req, res) => {
 
 // URL shortener
 
+// build a schema and model to store saved URLs
+const ShortURL = mongoose.model(
+  'ShortURL',
+  new mongoose.Schema({
+    short_url: String,
+    original_url: String,
+    suffix: String,
+  })
+);
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
@@ -101,13 +111,25 @@ app.use(bodyParser.json());
 app.post('/api/shorturl', function (req, res) {
   let client_submitted_url = req.body.url;
   let suffix = uuidv4();
+  let newShortURL = '';
   console.log('POST request called');
   console.log(suffix, ' <= this will be our suffix');
 
-  res.json({
-    success: 'placeholder for shortened URL',
+  let newURL = new ShortURL({
+    short_url: __dirname + '/api/short_url/' + suffix,
     original_url: client_submitted_url,
     suffix: suffix,
+  });
+
+  newURL.save((err, doc) => {
+    if (err) return console.log(err);
+    console.log('document saved successfully!');
+    res.json({
+      saved: true,
+      short_url: newURL.short_url,
+      original_url: newURL.original_url,
+      suffix: newURL.suffix,
+    });
   });
 });
 
