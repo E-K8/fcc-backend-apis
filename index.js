@@ -21,6 +21,7 @@ const port = process.env.PORT || 3000;
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that my API is remotely testable by FCC
 import cors from 'cors';
+import { lchown } from 'fs';
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -108,7 +109,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // POST /api/users gets JSON bodies
-app.post('/api/shorturl', function (req, res) {
+app.post('/api/shorturl', async (req, res) => {
   let client_submitted_url = req.body.url;
   let suffix = uuidv4();
   let newShortURL = '';
@@ -121,16 +122,21 @@ app.post('/api/shorturl', function (req, res) {
     suffix: suffix,
   });
 
-  newURL.save((err, doc) => {
-    if (err) return console.log(err);
-    console.log('document saved successfully!');
+  try {
+    const doc = await newURL.save();
+    console.log('document saved successfully');
     res.json({
       saved: true,
       short_url: newURL.short_url,
       original_url: newURL.original_url,
       suffix: newURL.suffix,
     });
-  });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while saving the document' });
+  }
 });
 
 // listen for requests :)
