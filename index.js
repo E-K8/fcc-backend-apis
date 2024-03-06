@@ -124,7 +124,7 @@ app.post('/api/shorturl', async (req, res) => {
 
   try {
     const doc = await newURL.save();
-    console.log('document saved successfully');
+    console.log('document saved successfully', newURL);
     res.json({
       saved: true,
       short_url: newURL.short_url,
@@ -137,6 +137,23 @@ app.post('/api/shorturl', async (req, res) => {
       .status(500)
       .json({ error: 'An error occurred while saving the document' });
   }
+});
+
+app.get('/api/shorturl/:suffix', (req, res) => {
+  let userGeneratedSuffix = req.params.suffix;
+  let userRequestedURL = ShortURL.find(
+    {
+      suffix: userGeneratedSuffix,
+    },
+    (err, docs) => {
+      if (err) console.log(err);
+      res.json({
+        userGeneratedSuffix: userGeneratedSuffix,
+        userRequestedURL: userRequestedURL,
+      });
+      // res.redirect('');
+    }
+  );
 });
 
 // listen for requests :)
