@@ -113,18 +113,18 @@ app.post('/api/shorturl', async (req, res) => {
   let client_submitted_url = req.body.url;
   let suffix = uuidv4();
   let newShortURL = '';
-  console.log('POST request called');
-  console.log(suffix, ' <= this will be our suffix');
+  // console.log('POST request called');
+  // console.log(suffix, ' <= this will be our suffix');
 
   let newURL = new ShortURL({
-    short_url: __dirname + '/api/short_url/' + suffix,
+    short_url: __dirname + '/api/shorturl/' + suffix,
     original_url: client_submitted_url,
     suffix: suffix,
   });
 
   try {
     const doc = await newURL.save();
-    console.log('document saved successfully', newURL);
+    // console.log('document saved successfully', newURL);
     res.json({
       saved: true,
       short_url: newURL.short_url,
@@ -141,19 +141,22 @@ app.post('/api/shorturl', async (req, res) => {
 
 app.get('/api/shorturl/:suffix', (req, res) => {
   let userGeneratedSuffix = req.params.suffix;
-  let userRequestedURL = ShortURL.find(
-    {
-      suffix: userGeneratedSuffix,
-    },
-    (err, docs) => {
-      if (err) console.log(err);
-      res.json({
-        userGeneratedSuffix: userGeneratedSuffix,
-        userRequestedURL: userRequestedURL,
-      });
-      // res.redirect('');
-    }
-  );
+  ShortURL.find({
+    suffix: userGeneratedSuffix,
+  })
+    .then(function (foundUrls) {
+      if (foundUrls.length > 0) {
+        let urlForRedirect = foundUrls[0];
+        console.log(urlForRedirect, ' <= urlForRedirect');
+        res.redirect(urlForRedirect.original_url);
+      } else {
+        res.status(404).send('URL not found');
+      }
+    })
+    .catch(function (err) {
+      console.log(err);
+      res.status(500).send('An error occurred while retrieving the document');
+    });
 });
 
 // listen for requests :)
