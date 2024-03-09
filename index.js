@@ -108,15 +108,22 @@ app.use(bodyParser.json());
 
 // POST /api/users gets JSON bodies
 app.post('/api/shorturl', async (req, res) => {
-  let client_submitted_url = req.body.url;
+  let clientSubmittedUrl = req.body.url;
   let suffix = uuidv4();
-  let newShortURL = '';
+
+  // Validate URL format
+  try {
+    new URL(clientSubmittedUrl);
+  } catch (error) {
+    return res.status(400).json({ error: 'invalid url' });
+  }
+
   console.log('POST request called');
   console.log(suffix, ' <= this will be our suffix');
 
   let newURL = new ShortURL({
     short_url: __dirname + '/api/shorturl/' + suffix,
-    original_url: client_submitted_url,
+    original_url: clientSubmittedUrl,
     suffix: suffix,
   });
 
