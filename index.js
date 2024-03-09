@@ -3,13 +3,12 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
-import mongo from 'mongodb';
 import bodyParser from 'body-parser';
 import { v4 as uuidv4 } from 'uuid';
+import dotenv from 'dotenv';
+dotenv.config();
 
-// mongoose.connect(process.env.DB_URI);
-// mongoose.connect(database_uri);
-// ↑↑↑ temporary variable in brackets as a solution to make it work locally, I create it on top of the file and don't commit it
+mongoose.connect(process.env.DB_URI);
 
 // Define __dirname in ES6 module
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +20,6 @@ const port = process.env.PORT || 3000;
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that my API is remotely testable by FCC
 import cors from 'cors';
-import { lchown } from 'fs';
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -113,8 +111,8 @@ app.post('/api/shorturl', async (req, res) => {
   let client_submitted_url = req.body.url;
   let suffix = uuidv4();
   let newShortURL = '';
-  // console.log('POST request called');
-  // console.log(suffix, ' <= this will be our suffix');
+  console.log('POST request called');
+  console.log(suffix, ' <= this will be our suffix');
 
   let newURL = new ShortURL({
     short_url: __dirname + '/api/shorturl/' + suffix,
@@ -124,7 +122,7 @@ app.post('/api/shorturl', async (req, res) => {
 
   try {
     const doc = await newURL.save();
-    // console.log('document saved successfully', newURL);
+    console.log('document saved successfully', newURL);
     res.json({
       saved: true,
       short_url: newURL.short_url,
