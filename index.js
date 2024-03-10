@@ -96,7 +96,6 @@ const ShortURL = mongoose.model(
   'ShortURL',
   new mongoose.Schema({
     original_url: String,
-    // suffix: String,
     short_url: String,
   })
 );
@@ -118,14 +117,9 @@ app.post('/api/shorturl', async (req, res) => {
     return res.status(400).json({ error: 'invalid url' });
   }
 
-  console.log('POST request called');
-  console.log(uniqueIdentifier, ' <= this will be our unique identifier');
-
   let newURL = new ShortURL({
     original_url: clientSubmittedUrl,
-    // suffix: suffix,
     short_url: uniqueIdentifier,
-    // short_url: '/api/shorturl/' + suffix,
   });
 
   try {
@@ -134,7 +128,6 @@ app.post('/api/shorturl', async (req, res) => {
     res.json({
       saved: true,
       original_url: newURL.original_url,
-      // suffix: newURL.suffix,
       short_url: uniqueIdentifier,
     });
   } catch (err) {
@@ -152,8 +145,6 @@ app.get('/api/shorturl/:short_url', (req, res) => {
   })
     .then((foundUrl) => {
       if (foundUrl) {
-        // let urlForRedirect = foundUrls[0];
-        console.log(foundUrl, ' <= foundUrl');
         res.redirect(foundUrl.original_url);
       } else {
         res.status(404).send('URL not found');
