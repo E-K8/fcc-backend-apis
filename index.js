@@ -95,9 +95,9 @@ app.get('/api/:date', (req, res) => {
 const ShortURL = mongoose.model(
   'ShortURL',
   new mongoose.Schema({
-    short_url: String,
     original_url: String,
-    // suffix: String,
+    suffix: String,
+    short_url: String,
   })
 );
 
@@ -109,8 +109,7 @@ app.use(bodyParser.json());
 // POST /api/users gets JSON bodies
 app.post('/api/shorturl', async (req, res) => {
   let clientSubmittedUrl = req.body.url;
-  // let suffix = uuidv4();
-  let short_url = uuidv4();
+  let suffix = uuidv4();
 
   // Validate URL format
   try {
@@ -120,13 +119,13 @@ app.post('/api/shorturl', async (req, res) => {
   }
 
   console.log('POST request called');
-  console.log(short_url, ' <= this will be our suffix/short_url');
+  console.log(suffix, ' <= this will be our suffix');
 
   let newURL = new ShortURL({
     original_url: clientSubmittedUrl,
-    // suffix: suffix,
+    suffix: suffix,
+    short_url: suffix,
     // short_url: '/api/shorturl/' + suffix,
-    short_url: short_url,
   });
 
   try {
@@ -136,8 +135,7 @@ app.post('/api/shorturl', async (req, res) => {
       saved: true,
       original_url: newURL.original_url,
       // suffix: newURL.suffix,
-      // short_url: newURL.short_url,
-      short_url: newURL.short_url,
+      short_url: newURL.suffix,
     });
   } catch (err) {
     console.log(err);
@@ -147,7 +145,7 @@ app.post('/api/shorturl', async (req, res) => {
   }
 });
 
-app.get('/api/shorturl/:short_url', (req, res) => {
+app.get('/api/shorturl/:suffix', (req, res) => {
   let userGeneratedSuffix = req.params.suffix;
   ShortURL.find({
     suffix: userGeneratedSuffix,
