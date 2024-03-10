@@ -91,12 +91,12 @@ app.get('/api/:date', (req, res) => {
 
 // URL shortener
 
-// build a schema and model to store saved URLs
+// URL shortener schema
 const ShortURL = mongoose.model(
   'ShortURL',
   new mongoose.Schema({
     original_url: String,
-    suffix: String,
+    // suffix: String,
     short_url: String,
   })
 );
@@ -109,7 +109,7 @@ app.use(bodyParser.json());
 // POST /api/users gets JSON bodies
 app.post('/api/shorturl', async (req, res) => {
   let clientSubmittedUrl = req.body.url;
-  let suffix = uuidv4();
+  let uniqueIdentifier = uuidv4();
 
   // Validate URL format
   try {
@@ -119,23 +119,23 @@ app.post('/api/shorturl', async (req, res) => {
   }
 
   console.log('POST request called');
-  console.log(suffix, ' <= this will be our suffix');
+  console.log(uniqueIdentifier, ' <= this will be our unique identifier');
 
   let newURL = new ShortURL({
     original_url: clientSubmittedUrl,
-    suffix: suffix,
-    short_url: suffix,
+    // suffix: suffix,
+    short_url: uniqueIdentifier,
     // short_url: '/api/shorturl/' + suffix,
   });
 
   try {
-    const doc = await newURL.save();
+    await newURL.save();
     console.log('document saved successfully', newURL);
     res.json({
       saved: true,
       original_url: newURL.original_url,
       // suffix: newURL.suffix,
-      short_url: newURL.suffix,
+      short_url: uniqueIdentifier,
     });
   } catch (err) {
     console.log(err);
@@ -145,21 +145,21 @@ app.post('/api/shorturl', async (req, res) => {
   }
 });
 
-app.get('/api/shorturl/:suffix', (req, res) => {
-  let userGeneratedSuffix = req.params.suffix;
-  ShortURL.find({
-    suffix: userGeneratedSuffix,
+app.get('/api/shorturl/:short_url', (req, res) => {
+  let userGeneratedShortUrl = req.params.short_url;
+  ShortURL.findOne({
+    short_url: userGeneratedShortUrl,
   })
-    .then(function (foundUrls) {
-      if (foundUrls.length > 0) {
-        let urlForRedirect = foundUrls[0];
-        console.log(urlForRedirect, ' <= urlForRedirect');
-        res.redirect(urlForRedirect.original_url);
+    .then((foundUrl) => {
+      if (foundUrl) {
+        // let urlForRedirect = foundUrls[0];
+        console.log(foundUrl, ' <= foundUrl');
+        res.redirect(foundUrl.original_url);
       } else {
         res.status(404).send('URL not found');
       }
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.log(err);
       res.status(500).send('An error occurred while retrieving the document');
     });
