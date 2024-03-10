@@ -122,9 +122,9 @@ app.post('/api/shorturl', async (req, res) => {
   console.log(suffix, ' <= this will be our suffix');
 
   let newURL = new ShortURL({
-    short_url: __dirname + '/api/shorturl/' + suffix,
     original_url: clientSubmittedUrl,
     suffix: suffix,
+    short_url: '/api/shorturl/' + suffix,
   });
 
   try {
@@ -132,9 +132,9 @@ app.post('/api/shorturl', async (req, res) => {
     console.log('document saved successfully', newURL);
     res.json({
       saved: true,
-      short_url: newURL.short_url,
       original_url: newURL.original_url,
       suffix: newURL.suffix,
+      short_url: newURL.short_url,
     });
   } catch (err) {
     console.log(err);
