@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import dns from 'dns';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -106,16 +107,65 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // POST /api/users gets JSON bodies
+// old POST request, uncomment if new one fails ↓
+// app.post('/api/shorturl', async (req, res) => {
+//   let clientSubmittedUrl = req.body.url;
+//   let uniqueIdentifier = uuidv4();
+
+//   // Validate URL format
+//   try {
+//     new URL(clientSubmittedUrl);
+//   } catch (error) {
+//     return res.status(400).json({ error: 'invalid url' });
+//   }
+
+//   let newURL = new ShortURL({
+//     original_url: clientSubmittedUrl,
+//     short_url: uniqueIdentifier,
+//   });
+
+//   try {
+//     await newURL.save();
+//     console.log('document saved successfully', newURL);
+//     res.json({
+//       saved: true,
+//       original_url: newURL.original_url,
+//       short_url: uniqueIdentifier,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     res
+//       .status(500)
+//       .json({ error: 'An error occurred while saving the document' });
+//   }
+// });
+
+// new POST with dns, choose this if it's working ↓
 app.post('/api/shorturl', async (req, res) => {
   let clientSubmittedUrl = req.body.url;
-  let uniqueIdentifier = uuidv4();
 
   // Validate URL format
   try {
-    new URL(clientSubmittedUrl);
+    const urlObj = new URL(clientSubmittedUrl);
+    const hostname = urlObj.hostname;
+
+    // Validate the hostname with dns.lookup
+    await new Promise((resolve, reject) => {
+      dns.lookup(hostname, (err) => {
+        if (err) {
+          reject('invalid url');
+        } else {
+          resolve();
+        }
+      });
+    });
   } catch (error) {
     return res.status(400).json({ error: 'invalid url' });
   }
+
+  let uniqueIdentifier = uuidv4();
+  console.log('POST request called');
+  console.log(uniqueIdentifier, ' <= this will be our unique identifier');
 
   let newURL = new ShortURL({
     original_url: clientSubmittedUrl,
