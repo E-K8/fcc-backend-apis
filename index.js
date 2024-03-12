@@ -141,25 +141,47 @@ app.use(bodyParser.json());
 // });
 
 // new POST with dns, choose this if it's working ↓
+// app.post('/api/shorturl', async (req, res) => {
+//   let clientSubmittedUrl = req.body.url;
+
+//   // Validate URL format
+//   try {
+//     const urlObj = new URL(clientSubmittedUrl);
+//     const hostname = urlObj.hostname;
+
+//     // Validate the hostname with dns.lookup
+//     await new Promise((resolve, reject) => {
+//       dns.lookup(hostname, (err) => {
+//         if (err) {
+//           reject('invalid url');
+//         } else {
+//           resolve();
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     return res.status(400).json({ error: 'invalid url' });
+//   }
 app.post('/api/shorturl', async (req, res) => {
+  console.log('Received request body:', req.body);
   let clientSubmittedUrl = req.body.url;
 
-  // Validate URL format
   try {
     const urlObj = new URL(clientSubmittedUrl);
     const hostname = urlObj.hostname;
 
-    // Validate the hostname with dns.lookup
     await new Promise((resolve, reject) => {
       dns.lookup(hostname, (err) => {
         if (err) {
-          reject('invalid url');
+          console.error('DNS lookup failed:', err);
+          reject(new Error('invalid url'));
         } else {
           resolve();
         }
       });
     });
   } catch (error) {
+    console.error('URL validation failed:', error.message);
     return res.status(400).json({ error: 'invalid url' });
   }
 
