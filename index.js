@@ -92,84 +92,148 @@ app.get('/api/:date', (req, res) => {
 
 // URL shortener
 
-// URL shortener schema
-const ShortURL = mongoose.model(
-  'ShortURL',
-  new mongoose.Schema({
-    original_url: String,
-    short_url: String,
-  })
-);
+// URL shortener schema old
+// const ShortURL = mongoose.model(
+//   'ShortURL',
+//   new mongoose.Schema({
+//     original_url: String,
+//     short_url: String,
+//   })
+// );
+
+// URL shortener schema and model new
+
+const URLSchema = new mongoose.Schema({
+  original_url: { type: String, required: true, unique: true },
+  short_url: { type: String, required: true, unique: true },
+});
+
+const URLModel = mongoose.model('url', URLSchema);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
+// URL shortener POST request old
+// app.post('/api/shorturl', async (req, res) => {
+//   console.log('Received request body:', req.body);
+//   let clientSubmittedUrl = req.body.url;
+
+//   try {
+//     const urlObj = new URL(clientSubmittedUrl);
+//     const hostname = urlObj.hostname;
+
+//     await new Promise((resolve, reject) => {
+//       dns.lookup(hostname, (err) => {
+//         if (err) {
+//           console.error('DNS lookup failed:', err);
+//           reject(new Error('invalid url'));
+//         } else {
+//           resolve();
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     console.error('URL validation failed:', error.message);
+//     return res.status(400).json({ error: 'invalid url' });
+//   }
+
+//   let uniqueIdentifier = uuidv4();
+//   console.log('POST request called');
+//   console.log(uniqueIdentifier, ' <= this will be our unique identifier');
+
+//   let newURL = new ShortURL({
+//     original_url: clientSubmittedUrl,
+//     short_url: uniqueIdentifier,
+//   });
+
+//   try {
+//     await newURL.save();
+//     console.log('document saved successfully', newURL);
+//     res.json({
+//       saved: true,
+//       original_url: newURL.original_url,
+//       short_url: uniqueIdentifier,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     res
+//       .status(500)
+//       .json({ error: 'An error occurred while saving the document' });
+//   }
+// });
+
+// URL shortener POST request new
 app.post('/api/shorturl', async (req, res) => {
-  console.log('Received request body:', req.body);
-  let clientSubmittedUrl = req.body.url;
+  const { url } = req.body;
 
   try {
-    const urlObj = new URL(clientSubmittedUrl);
-    const hostname = urlObj.hostname;
+    const urlObj = new URL(url);
 
-    await new Promise((resolve, reject) => {
-      dns.lookup(hostname, (err) => {
-        if (err) {
-          console.error('DNS lookup failed:', err);
-          reject(new Error('invalid url'));
+    dns.lookup(urlObj.hostname, async (err, address) => {
+      if (!address) {
+        res.json({ error: 'invalid url' });
+      } else {
+        const original_url = urlObj.href;
+        let foundURL = await URLModel.findOne({ original_url: original_url });
+
+        if (foundURL) {
+          res.json({
+            original_url: foundURL.original_url,
+            short_url: foundURL.short_url,
+          });
         } else {
-          resolve();
+          const short_url = uuidv4().slice(0, 8); // Using a slice of UUID for shorter ID
+
+          const newURL = new URLModel({
+            original_url,
+            short_url,
+          });
+          await newURL.save();
+
+          res.json({ original_url, short_url });
         }
-      });
+      }
     });
   } catch (error) {
-    console.error('URL validation failed:', error.message);
-    return res.status(400).json({ error: 'invalid url' });
-  }
-
-  let uniqueIdentifier = uuidv4();
-  console.log('POST request called');
-  console.log(uniqueIdentifier, ' <= this will be our unique identifier');
-
-  let newURL = new ShortURL({
-    original_url: clientSubmittedUrl,
-    short_url: uniqueIdentifier,
-  });
-
-  try {
-    await newURL.save();
-    console.log('document saved successfully', newURL);
-    res.json({
-      saved: true,
-      original_url: newURL.original_url,
-      short_url: uniqueIdentifier,
-    });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while saving the document' });
+    res.json({ error: 'invalid url' });
   }
 });
 
-app.get('/api/shorturl/:short_url', (req, res) => {
-  let userGeneratedShortUrl = req.params.short_url;
-  ShortURL.findOne({
-    short_url: userGeneratedShortUrl,
-  })
-    .then((foundUrl) => {
-      if (foundUrl) {
-        res.redirect(foundUrl.original_url);
-      } else {
-        res.status(404).send('URL not found');
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send('An error occurred while retrieving the document');
-    });
+// URL shortener GET request old
+// app.get('/api/shorturl/:short_url', (req, res) => {
+//   let userGeneratedShortUrl = req.params.short_url;
+//   ShortURL.findOne({
+//     short_url: userGeneratedShortUrl,
+//   })
+//     .then((foundUrl) => {
+//       if (foundUrl) {
+//         res.redirect(foundUrl.original_url);
+//       } else {
+//         res.status(404).send('URL not found');
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).send('An error occurred while retrieving the document');
+//     });
+// });
+
+// URL shortener GET request new
+app.get('/', (req, res) => {
+  res.sendFile(process.cwd() + '/views/index.html');
+});
+
+app.get('/api/shorturl/:short_url', async (req, res) => {
+  const { short_url } = req.params;
+  const foundURL = await URLModel.findOne({ short_url: short_url });
+
+  if (foundURL) {
+    res.redirect(foundURL.original_url);
+  } else {
+    res.json({ message: 'The short url does not exist!' });
+  }
 });
 
 // listen for requests :)
