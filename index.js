@@ -65,39 +65,39 @@ app.get('/api/whoami', (req, res) => {
   });
 });
 
-// TIMESTAMP MICROSERVICE
-app.get('/api', (req, res) => {
-  const now = new Date();
-  res.json({
-    unix: now.getTime(),
-    utc: now.toUTCString(),
-  });
-});
+// TIMESTAMP MICROSERVICE TODO rework this as it returns "Invalid Date" by default (return here after exercise tracker is finished)
+// app.get('/api', (req, res) => {
+//   const now = new Date();
+//   res.json({
+//     unix: now.getTime(),
+//     utc: now.toUTCString(),
+//   });
+// });
 
-app.get('/api/:date', (req, res) => {
-  let dateString = req.params.date;
-  let passedInValue = new Date(dateString);
-  // attempt to convert dateString to a number ↓
-  let unixNumber = Number(dateString);
+// app.get('/api/:date', (req, res) => {
+//   let dateString = req.params.date;
+//   let passedInValue = new Date(dateString);
+//   // attempt to convert dateString to a number ↓
+//   let unixNumber = Number(dateString);
 
-  // check that the conversion was successful and the number is an integer ↓
-  if (!isNaN(unixNumber) && unixNumber.toString() === dateString) {
-    // the input is a valid Unix timestamp: create a Date object from the number
-    passedInValue = new Date(unixNumber);
-  } else {
-    // the input is not a Unix timestamp: attempt to create a Date object from the string
-    passedInValue = new Date(dateString);
-  }
+//   // check that the conversion was successful and the number is an integer ↓
+//   if (!isNaN(unixNumber) && unixNumber.toString() === dateString) {
+//     // the input is a valid Unix timestamp: create a Date object from the number
+//     passedInValue = new Date(unixNumber);
+//   } else {
+//     // the input is not a Unix timestamp: attempt to create a Date object from the string
+//     passedInValue = new Date(dateString);
+//   }
 
-  if (passedInValue.toString() === 'Invalid Date') {
-    res.json({ error: 'Invalid Date' });
-  } else {
-    res.json({
-      unix: passedInValue.getTime(),
-      utc: passedInValue.toUTCString(),
-    });
-  }
-});
+//   if (passedInValue.toString() === 'Invalid Date') {
+//     res.json({ error: 'Invalid Date' });
+//   } else {
+//     res.json({
+//       unix: passedInValue.getTime(),
+//       utc: passedInValue.toUTCString(),
+//     });
+//   }
+// });
 
 // URL SHORTENER
 
@@ -187,6 +187,19 @@ app.post('/api/users', (req, res) => {
   newUser.save();
   res.json(newUser);
 });
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await userModel.find({});
+    res.json(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+// app.post('/api/users/:_id/exercises', (req, res) => {
+//   console.log(req.body);
+// });
 
 // listen for requests :)
 const listener = app.listen(port, () => {
