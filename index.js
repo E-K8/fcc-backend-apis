@@ -56,19 +56,21 @@ app.get('/api/hello', (req, res) => {
   res.json({ greeting: 'hello API' });
 });
 
-app.get('/api', (req, res) => {
-  const now = new Date();
-  res.json({
-    unix: now.getTime(),
-    utc: now.toUTCString(),
-  });
-});
-
+// REQUEST HEADER PARSER
 app.get('/api/whoami', (req, res) => {
   res.json({
     ipaddress: req.socket.remoteAddress,
     language: req.headers['accept-language'],
     software: req.headers['user-agent'],
+  });
+});
+
+// TIMESTAMP MICROSERVICE
+app.get('/api', (req, res) => {
+  const now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString(),
   });
 });
 
@@ -97,7 +99,7 @@ app.get('/api/:date', (req, res) => {
   }
 });
 
-// URL shortener
+// URL SHORTENER
 
 // URL shortener schema and model
 const URLSchema = new mongoose.Schema({
@@ -168,6 +170,22 @@ app.get('/api/shorturl/:short_url', async (req, res) => {
   } else {
     res.json({ message: 'The short url does not exist!' });
   }
+});
+
+// EXERCISE TRACKER
+
+// user schema and model
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+});
+
+let userModel = mongoose.model('user', userSchema);
+
+app.post('/api/users', (req, res) => {
+  let username = req.body.username;
+  let newUser = userModel({ username: username });
+  newUser.save();
+  res.json(newUser);
 });
 
 // listen for requests :)
