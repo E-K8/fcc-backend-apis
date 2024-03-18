@@ -178,8 +178,16 @@ app.get('/api/shorturl/:short_url', async (req, res) => {
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
 });
-
 let userModel = mongoose.model('user', userSchema);
+
+// exercise schema and model
+const exerciseSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
+  description: { type: String, required: true },
+  duration: { type: Number, required: true },
+  date: { type: Date, default: new Date() },
+});
+let exerciseModel = mongoose.model('exercise', exerciseSchema);
 
 app.post('/api/users', (req, res) => {
   let username = req.body.username;
@@ -197,9 +205,41 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-// app.post('/api/users/:_id/exercises', (req, res) => {
-//   console.log(req.body);
-// });
+app.post('/api/users/:_id/exercises', async (req, res) => {
+  try {
+    console.log(req.body);
+    let userId = req.params._id;
+    let exerciseObj = {
+      userId,
+      description: req.body.description,
+      duration: parseInt(req.body.duration, 10),
+    };
+
+    if (req.body.date) {
+      exerciseObj.date = req.body.date;
+    } else {
+      exerciseObj.date = new Date();
+    }
+
+    const newExercise = new exerciseModel(exerciseObj);
+    const userFound = await userModel.findById(userId);
+
+    await newExercise.save();
+
+    res.json({
+      _id: userFound._id,
+      username: userFound.username,
+      description: newExercise.description,
+      duration: newExercise.duration,
+      date: newExercise.date.toDateString(),
+    });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send('Server error occurred while processing your request.');
+  }
+});
 
 // listen for requests :)
 const listener = app.listen(port, () => {
