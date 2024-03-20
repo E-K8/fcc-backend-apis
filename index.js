@@ -1,5 +1,5 @@
 // init project
-import express from 'express';
+import express, { response } from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
@@ -238,6 +238,30 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     res
       .status(500)
       .send('Server error occurred while processing your request.');
+  }
+});
+
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+    const userId = req.params._id;
+    const userFound = await userModel.findById(userId).exec();
+
+    if (!userFound) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const exercises = await exerciseModel.find({ userId: userId }).exec();
+
+    const responseObj = {
+      _id: userId,
+      username: userFound.username,
+      log: exercises,
+      count: exercises.length,
+    };
+
+    res.json(responseObj);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
