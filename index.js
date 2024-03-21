@@ -244,13 +244,32 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {
     const userId = req.params._id;
+    const { from, to, limit } = req.query;
+
     const userFound = await userModel.findById(userId).exec();
 
     if (!userFound) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    let exercises = await exerciseModel.find({ userId: userId }).exec();
+    let query = { userId: userId };
+
+    if (from) {
+      query.date = { $gte: new Date(from) };
+    }
+
+    if (to) {
+      if (!query.date) query.date = {};
+      query.date.$lte = new Date(to);
+    }
+
+    let exercisesQuery = exerciseModel.find(query);
+
+    if (limit) {
+      exercisesQuery = exercisesQuery.limit(parseInt(limit));
+    }
+
+    let exercises = await exercisesQuery.exec();
 
     // Convert each date to a dateString format
     exercises = exercises.map((exercise) => ({
@@ -267,6 +286,7 @@ app.get('/api/users/:_id/logs', async (req, res) => {
 
     res.json(responseObj);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Server error' });
   }
 });
