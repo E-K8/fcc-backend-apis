@@ -250,7 +250,13 @@ app.get('/api/users/:_id/logs', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const exercises = await exerciseModel.find({ userId: userId }).exec();
+    let exercises = await exerciseModel.find({ userId: userId }).exec();
+
+    // Convert each date to a dateString format
+    exercises = exercises.map((exercise) => ({
+      ...exercise.toObject(), // Convert the document to a plain JS object
+      date: exercise.date.toDateString(), // Convert the date to dateString format
+    }));
 
     const responseObj = {
       _id: userId,
