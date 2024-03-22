@@ -6,8 +6,10 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import dns from 'dns';
 import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
 import dotenv from 'dotenv';
 dotenv.config();
+const upload = multer({ dest: './public/data/uploads/' });
 
 mongoose
   .connect(process.env.DB_URI)
@@ -24,6 +26,7 @@ const port = process.env.PORT || 3000;
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that my API is remotely testable by FCC
 import cors from 'cors';
+import { type } from 'os';
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -293,6 +296,20 @@ app.get('/api/users/:_id/logs', async (req, res) => {
     console.log(error);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+// FILE METADATA
+
+app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
+  // req.file is the name of my file in the form above, here 'upfile'
+  // req.body will hold the text fields, if there were any
+  console.log(req.file, req.body);
+
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size,
+  });
 });
 
 // listen for requests :)
