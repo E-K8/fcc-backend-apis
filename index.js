@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import dotenv from 'dotenv';
 dotenv.config();
-const upload = multer({ dest: './public/data/uploads/' });
+const upload = multer();
 
 mongoose
   .connect(process.env.DB_URI)
@@ -303,7 +303,6 @@ app.get('/api/users/:_id/logs', async (req, res) => {
 app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
   // req.file is the name of my file in the form above, here 'upfile'
   // req.body will hold the text fields, if there were any
-  console.log(req.file, req.body);
 
   res.json({
     name: req.file.originalname,
