@@ -50,6 +50,10 @@ app.get('/exerciseTracker', (req, res) => {
   res.sendFile(`${__dirname}/views/exerciseTracker.html`);
 });
 
+app.get('/fileMetadata', (req, res) => {
+  res.sendFile(`${__dirname}/views/fileMetadata.html`);
+});
+
 // my first API endpoint
 app.get('/api/hello', (req, res) => {
   console.log({ greeting: 'hello API' });
