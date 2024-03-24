@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 import dotenv from 'dotenv';
 dotenv.config();
-const upload = multer();
+const upload = multer({ dest: './public/data/uploads/' });
 
 mongoose
   .connect(process.env.DB_URI)
