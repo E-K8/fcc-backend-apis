@@ -1,5 +1,5 @@
 // init project
-import express, { response } from 'express';
+import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import mongoose from 'mongoose';
@@ -25,7 +25,6 @@ const port = process.env.PORT || 3000;
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that my API is remotely testable by FCC
 import cors from 'cors';
-import { type } from 'os';
 app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
