@@ -70,40 +70,6 @@ app.get('/api/whoami', (req, res) => {
   });
 });
 
-// TIMESTAMP MICROSERVICE TODO rework this as it returns "Invalid Date" by default (return here after exercise tracker is finished)
-// app.get('/api', (req, res) => {
-//   const now = new Date();
-//   res.json({
-//     unix: now.getTime(),
-//     utc: now.toUTCString(),
-//   });
-// });
-
-// app.get('/api/:date', (req, res) => {
-//   let dateString = req.params.date;
-//   let passedInValue = new Date(dateString);
-//   // attempt to convert dateString to a number ↓
-//   let unixNumber = Number(dateString);
-
-//   // check that the conversion was successful and the number is an integer ↓
-//   if (!isNaN(unixNumber) && unixNumber.toString() === dateString) {
-//     // the input is a valid Unix timestamp: create a Date object from the number
-//     passedInValue = new Date(unixNumber);
-//   } else {
-//     // the input is not a Unix timestamp: attempt to create a Date object from the string
-//     passedInValue = new Date(dateString);
-//   }
-
-//   if (passedInValue.toString() === 'Invalid Date') {
-//     res.json({ error: 'Invalid Date' });
-//   } else {
-//     res.json({
-//       unix: passedInValue.getTime(),
-//       utc: passedInValue.toUTCString(),
-//     });
-//   }
-// });
-
 // URL SHORTENER
 
 // URL shortener schema and model
@@ -325,16 +291,40 @@ app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
   });
 });
 
-// app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
-//   // req.file is the name of my file in the form above, here 'upfile'
-//   // req.body will hold the text fields, if there were any
+// TIMESTAMP MICROSERVICE
 
-//   res.json({
-//     name: req.file.originalname,
-//     type: req.file.mimetype,
-//     size: req.file.size,
-//   });
-// });
+app.get('/api', (req, res) => {
+  const now = new Date();
+  res.json({
+    unix: now.getTime(),
+    utc: now.toUTCString(),
+  });
+});
+
+app.get('/api/:date', (req, res) => {
+  let dateString = req.params.date;
+  let passedInValue = new Date(dateString);
+  // attempt to convert dateString to a number ↓
+  let unixNumber = Number(dateString);
+
+  // check that the conversion was successful and the number is an integer ↓
+  if (!isNaN(unixNumber) && unixNumber.toString() === dateString) {
+    // the input is a valid Unix timestamp: create a Date object from the number
+    passedInValue = new Date(unixNumber);
+  } else {
+    // the input is not a Unix timestamp: attempt to create a Date object from the string
+    passedInValue = new Date(dateString);
+  }
+
+  if (passedInValue.toString() === 'Invalid Date') {
+    res.json({ error: 'Invalid Date' });
+  } else {
+    res.json({
+      unix: passedInValue.getTime(),
+      utc: passedInValue.toUTCString(),
+    });
+  }
+});
 
 // listen for requests :)
 const listener = app.listen(port, () => {

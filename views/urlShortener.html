@@ -12,29 +12,35 @@
   </head>
 
   <body>
-    <h1>URL Shortener Microservice</h1>
-    <main>
-      <section>
-        <form action="api/shorturl" method="POST">
-          <fieldset>
-            <legend>URL Shortener</legend>
-            <label for="url_input">URL:</label>
-            <input
-              id="url_input"
-              type="text"
-              name="url"
-              placeholder="https://www.freecodecamp.org/"
-            />
-            <input type="submit" value="POST URL" />
-          </fieldset>
-        </form>
-      </section>
-    </main>
-    <footer>
+    <div class="container">
+      <h1>URL Shortener Microservice</h1>
+      <hr />
+      <main>
+        <section>
+          <form action="api/shorturl" method="POST">
+            <fieldset>
+              <legend>URL Shortener</legend>
+              <label for="url_input">URL:</label>
+              <input
+                id="url_input"
+                type="text"
+                name="url"
+                placeholder="https://ek8.io"
+              />
+              <input type="submit" value="POST URL" />
+            </fieldset>
+          </form>
+        </section>
+      </main>
+    </div>
+    <div class="footer">
       <p>
         By
-        <a href="https://www.freecodecamp.org/">freeCodeCamp</a>
+        <a href="https://ek8.io">Kate Platonova</a>
       </p>
-    </footer>
+      <p>
+        <a href="https://www.linkedin.com/in/katplat">LinkedIn</a>
+      </p>
+    </div>
   </body>
 </html>
