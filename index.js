@@ -39,20 +39,20 @@ app.get('/timestamp', (req, res) => {
   res.sendFile(`${__dirname}/views/timestamp.html`);
 });
 
-app.get('/requestHeaderParser', (req, res) => {
-  res.sendFile(`${__dirname}/views/requestHeaderParser.html`);
+app.get('/request-header-parser', (req, res) => {
+  res.sendFile(`${__dirname}/views/request-header-parser.html`);
 });
 
-app.get('/urlShortener', (req, res) => {
-  res.sendFile(`${__dirname}/views/urlShortener.html`);
+app.get('/url-shortener', (req, res) => {
+  res.sendFile(`${__dirname}/views/url-shortener.html`);
 });
 
-app.get('/exerciseTracker', (req, res) => {
-  res.sendFile(`${__dirname}/views/exerciseTracker.html`);
+app.get('/exercise-tracker', (req, res) => {
+  res.sendFile(`${__dirname}/views/exercise-tracker.html`);
 });
 
-app.get('/fileMetadata', (req, res) => {
-  res.sendFile(`${__dirname}/views/fileMetadata.html`);
+app.get('/file-metadata', (req, res) => {
+  res.sendFile(`${__dirname}/views/file-metadata.html`);
 });
 
 // my first API endpoint
